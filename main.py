@@ -54,7 +54,8 @@ def getGameData(browser, gameLink):
         gameCount = len(browser.find_elements(By.CLASS_NAME, "pb-1"))
         gamesData = []
         for i in range(gameCount):
-            link = browser.find_element(By.XPATH, '//*[@id="gameMenuToggler"]/ul/li[{}]/a'.format(2+i)).get_attribute("href")
+            link = browser.find_element(
+                By.XPATH, '//*[@id="gameMenuToggler"]/ul/li[{}]/a'.format(2+i)).get_attribute("href")
             gamesData += getGameData(browser, link)
         return gamesData
     else:
@@ -70,6 +71,7 @@ def getGameData(browser, gameLink):
             data["result"] = 1
         return [data]
 
+
 def main(browser):
     if os.path.isfile("data.json"):
         with open("data.json") as f:
@@ -82,14 +84,18 @@ def main(browser):
             gameLinks += getGames(browser, i)
 
     gameData = []
-    for i in gameLinks:
+    for j, i in enumerate(gameLinks):
+        print(j)
         gameData += getGameData(browser, i)
-
+        if (j+1)%100 == 0:
+            data["gameData"] = gameData
+            data["gameLinks"] = gameLinks
+            with open("data.json", "w") as f:
+                json.dump(data, f)
     data["gameData"] = gameData
     data["gameLinks"] = gameLinks
-    with open("data.json") as f:
+    with open("data.json", "w") as f:
         json.dump(data, f)
-
 
 if __name__ == "__main__":
     browser = webdriver.Chrome(ChromeDriverManager().install())
